@@ -21,7 +21,11 @@ const {
 // database connection
 connect();
 
-app.use(cors());
+var corsOptions = {
+  origin: '*',
+
+}
+app.use(cors(corsOptions));
 app.use(morgan("combined"));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
