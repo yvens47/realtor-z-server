@@ -14,7 +14,9 @@ const userRouter = require("./routes/userRouter");
 const listingRouter = require("./routes/listingRouter");
 
 // utils
-const { connect } = require("./utils/db");
+const {
+  connect
+} = require("./utils/db");
 
 // database connection
 connect();
@@ -22,7 +24,9 @@ connect();
 app.use(cors());
 app.use(morgan("combined"));
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
 // parse application/json
 app.use(bodyParser.json());
@@ -32,11 +36,14 @@ app.use("/admin", admin());
 //endpoints
 app.use("/api/users", userRouter);
 app.use("/api/listings", listingRouter);
-app.use(express.static(path.join(__dirname,"../../realtor-z/build")));
+app.use(express.static(path.join(__dirname, "../../realtor-z/build")));
 
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname,"../../realtor-z/build/index.html"));
+  res.json({
+    data: "Welcome to Realtor Server API Home page"
+  });
+  //res.sendFile(path.join(__dirname,"../../realtor-z/build/index.html"));
 });
 
 //runserver
