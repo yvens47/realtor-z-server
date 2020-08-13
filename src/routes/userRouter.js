@@ -1,10 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const path = require("path");
-const imageUploads = require("../utils/imageUpload");
-
 const multer = require("multer");
-
+const imageUpload = require("../utils/imageUpload");
 const userController = require("../controllers/user");
 
 router.post("/signup", userController.signup);
@@ -19,7 +17,7 @@ router.delete(
 );
 router.post(
   "/:id/upload",
-  imageUploads().single("avatar"),
+  imageUpload().single("avatar"),
   userController.upload
 );
 router.put("/update/:id", userController.update);

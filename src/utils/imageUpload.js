@@ -1,22 +1,30 @@
 const multer = require("multer");
 
+
+
+
+
 const options = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, `./public/uploads`);
+
+
   },
   filename: (req, file, cb) => {
+
     const fileName =
       Date.now() +
       "-" +
       file.originalname
-        .toLowerCase()
-        .split(" ")
-        .join("-");
+      .toLowerCase()
+      .split(" ")
+      .join("-");
     cb(null, fileName);
   }
 });
 
 function MulterUpload(storage) {
+
   return multer({
     storage: storage,
     fileFilter: (req, file, cb) => {

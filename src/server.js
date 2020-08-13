@@ -14,23 +14,22 @@ const userRouter = require("./routes/userRouter");
 const listingRouter = require("./routes/listingRouter");
 
 // utils
-const {
-  connect
-} = require("./utils/db");
+const { connect } = require("./utils/db");
 
 // database connection
 connect();
 
 var corsOptions = {
-  origin: '*',
-
-}
+  origin: "*"
+};
 app.use(cors(corsOptions));
 app.use(morgan("combined"));
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 
 // parse application/json
 app.use(bodyParser.json());
@@ -41,7 +40,6 @@ app.use("/admin", admin());
 app.use("/api/users", userRouter);
 app.use("/api/listings", listingRouter);
 app.use(express.static(path.join(__dirname, "../../realtor-z/build")));
-
 
 app.get("*", (req, res) => {
   res.json({
