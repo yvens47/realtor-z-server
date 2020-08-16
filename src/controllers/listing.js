@@ -121,10 +121,6 @@ get = async (req, res, next) => {
   }
 };
 upload = async (req, res, next) => {
-
-  console.log(req.files[0])
-
-
   // bucket name
   const bucketName = "realtor-zfddbc35f-bd08-4ee5-85e5-1998a1fdf585"; //"aws-codestar-us-east-2-667036734484"; //"realtor" + uuid.v4();
   aws.config.setPromisesDependency();
@@ -141,10 +137,11 @@ upload = async (req, res, next) => {
   }).promise();
 
   s3.then(() => {
+    let key = `houses/${req.files[0].originalname}`;
     var objectParams = {
       ACL: 'public-read',
       Bucket: bucketName,
-      Key: `houses/${req.files[0].originalname}`,
+      Key: key,
       Body: fs.createReadStream(req.files[0].path),
     };
     // Create object upload promise
@@ -153,53 +150,58 @@ upload = async (req, res, next) => {
     }).putObject(objectParams).promise();
     uploadPromise.then(
       function (data) {
-        console.log("Successfully uploaded data");
-      });
+        try {
+          if (req.error) {
+            res.status(400).json({
+              status: false,
+              message: req.errro
+            });
+          } else {
+            const {
+              files
+            } = req;
+            // const { filename } = files;
+            const lists = [bucketName + ".s3.amazonaws.com/" + key];
+            // files.forEach(element => {
+            //   lists.push(element.filename);
+            // });
+
+            // find doc and update photos:['photo1',photo2' ....]
+            Listing.findOneAndUpdate({
+                _id: req.params.id
+              }, {
+                $push: {
+                  photos: lists
+                }
+              },
+              (err, doc) => {
+
+              }
+            );
+
+            res.json({
+              status: 200,
+              message: "upload successfully"
+            });
+          }
+        } catch (error) {
+          res.json({
+            status: 401,
+            message: error.message
+          });
+        }
+
+      }).catch(error => res.json({
+
+      //unable to upload files
+      error: error.message
+    }))
 
   })
 
 
 
-  try {
-    if (req.error) {
-      res.status(400).json({
-        status: false,
-        message: req.errro
-      });
-    } else {
-      const {
-        files
-      } = req;
-      // const { filename } = files;
-      const lists = [];
-      files.forEach(element => {
-        lists.push(element.filename);
-      });
 
-      // find doc and update photos:['photo1',photo2' ....]
-      Listing.findOneAndUpdate({
-          _id: req.params.id
-        }, {
-          $push: {
-            photos: lists
-          }
-        },
-        (err, doc) => {
-
-        }
-      );
-
-      res.json({
-        status: 200,
-        message: "upload successfully"
-      });
-    }
-  } catch (error) {
-    res.json({
-      status: 401,
-      message: error.message
-    });
-  }
 };
 
 module.exports = ListingController = {
