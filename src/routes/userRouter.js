@@ -17,7 +17,7 @@ router.delete(
 );
 router.post(
   "/:id/upload",
-  imageUpload().single("avatar"),
+  imageUpload.imageUpload().single("avatar"),
   userController.upload
 );
 router.put("/update/:id", userController.update);

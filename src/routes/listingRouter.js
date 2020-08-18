@@ -10,8 +10,7 @@ router.put("/update/:id", ListingController.update);
 
 router.post(
   "/upload/:id",
-  imageUploads().array("images", 12),
-
+  imageUploads.imageUploadWithAWS().array("images", 12),
   ListingController.upload
 
 );
