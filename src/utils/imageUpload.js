@@ -7,8 +7,8 @@ const uuid = require("uuid");
 // aws storage object
 aws.config.setPromisesDependency();
 aws.config.update({
-  accessKeyId: "AKIAZWTT42QKOBYMALOG",
-  secretAccessKey: "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",
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
   region: ""
 
 })
