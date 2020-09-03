@@ -14,7 +14,9 @@ const userRouter = require("./routes/userRouter");
 const listingRouter = require("./routes/listingRouter");
 
 // utils
-const { connect } = require("./utils/db");
+const {
+  connect
+} = require("./utils/db");
 
 // database connection
 connect();
@@ -42,8 +44,15 @@ app.use("/api/listings", listingRouter);
 app.use(express.static(path.join(__dirname, "../../realtor-z/build")));
 
 app.get("*", (req, res) => {
+  const endPoints = [{
+      users: ['/api/users', ],
+      listings: ['/api/listings']
+
+    }
+
+  ];
   res.json({
-    data: "Welcome to Realtor Server API Home page"
+    endPoints
   });
   //res.sendFile(path.join(__dirname,"../../realtor-z/build/index.html"));
 });

@@ -3,9 +3,10 @@ const User = require("../models/user.model");
 const Listing = require("../models/listing.model");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const uploadFileS3 = require("../utils/imageUpload")
-const fs = require('fs')
-
+const uploadFileS3 = require("../utils/imageUpload");
+const fs = require("fs");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
 //s3
 const aws = require("aws-sdk");
 const uuid = require("uuid");
@@ -17,7 +18,7 @@ const Crud = require("../utils/crud");
 const {
   getCoordinates
 } = require("../utils/utils");
-const s3Uplaod = require("../utils/imageUpload")
+const s3Uplaod = require("../utils/imageUpload");
 
 // all listings
 listings = async (req, res) => {
@@ -120,26 +121,53 @@ get = async (req, res, next) => {
     res.json(error);
   }
 };
-upload = async (req, res, next) => {
+const options = {
+  accessKeyId: "AKIAZWTT42QKD7VRZS5O",
+  secretAccessKey: "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",
+  region: "us-east-1"
 
-  try {
-    if (req.error) {
+}
+aws.config.update(options)
+const s3 = new aws.S3();
+
+const uploadMulter = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "realtor-houses",
+    acl: "public-read",
+    metadata: function (req, file, cb) {
+      cb(null, {
+        fieldName: file.fieldname
+      });
+    },
+    key: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+
+  })
+})
+const MultiUpload = uploadMulter.array('images');
+upload = async (req, res, next) => {
+  // upload to aws s3 storage
+  MultiUpload(req, res, (error) => {
+
+    if (error) {
       res.status(400).json({
         status: false,
         message: req.errro
       });
-    } else {
-      const {
-        files
-      } = req;
-      // const { filename } = files;
-      //const lists = [bucketName + ".s3.amazonaws.com/" + key];
-      const lists = [];
-      files.forEach(element => {
-        lists.push(element.filename);
-      });
+    }
+    const {
+      files
+    } = req;
 
-      // find doc and update photos:['photo1',photo2' ....]
+    const lists = [];
+    files.forEach(element => {
+      lists.push(element.location);
+    });
+
+    // find doc and update photos:['photo1',photo2' ....]
+    try {
       Listing.findOneAndUpdate({
           _id: req.params.id
         }, {
@@ -148,25 +176,40 @@ upload = async (req, res, next) => {
           }
         },
         (err, doc) => {
+          if (err) {
+            res.json({
+              status: 401,
+              message: error.message
+            });
+
+          }
+          res.status(200).json({
+            data: "Uploaded successfully"
+          });
 
         }
       );
 
+
+    } catch (error) {
       res.json({
-        status: 200,
-        message: "upload successfully"
+        status: 401,
+        message: error.message
       });
+
     }
-  } catch (error) {
-    res.json({
-      status: 401,
-      message: error.message
-    });
 
 
-  }
-}
 
+
+
+  })
+
+
+
+
+
+};
 
 module.exports = ListingController = {
   get,
@@ -175,3 +218,31 @@ module.exports = ListingController = {
   listings,
   upload
 };
+
+
+
+//       // find doc and update photos:['photo1',photo2' ....]
+//       Listing.findOneAndUpdate({
+//           _id: req.params.id
+//         }, {
+//           $push: {
+//             photos: lists
+//           }
+//         },
+//         (err, doc) => {
+
+//         }
+//       );
+
+//       res.json({
+//         status: 200,
+//         message: "upload successfully"
+//       });
+//     }
+//   } catch (error) {
+//     res.json({
+//       status: 401,
+//       message: error.message
+//     });
+
+//   }
