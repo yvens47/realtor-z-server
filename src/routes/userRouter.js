@@ -15,9 +15,10 @@ router.delete(
   "/dashboard/listings/delete/:id",
   userController.deleteUserListing
 );
+
 router.post(
   "/:id/upload",
-  imageUpload.imageUpload().single("avatar"),
+  // imageUpload.imageUpload().single("avatar"),
   userController.upload
 );
 router.put("/update/:id", userController.update);

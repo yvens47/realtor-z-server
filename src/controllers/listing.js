@@ -7,6 +7,7 @@ const uploadFileS3 = require("../utils/imageUpload");
 const fs = require("fs");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+const uploader = require("../utils/imageUpload")
 //s3
 const aws = require("aws-sdk");
 const uuid = require("uuid");
@@ -121,32 +122,11 @@ get = async (req, res, next) => {
     res.json(error);
   }
 };
-const options = {
-  accessKeyId: "AKIAZWTT42QKD7VRZS5O",
-  secretAccessKey: "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",
-  region: "us-east-1"
 
-}
-aws.config.update(options)
-const s3 = new aws.S3();
 
-const uploadMulter = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: "realtor-houses",
-    acl: "public-read",
-    metadata: function (req, file, cb) {
-      cb(null, {
-        fieldName: file.fieldname
-      });
-    },
-    key: function (req, file, cb) {
-      cb(null, file.originalname)
-    }
-
-  })
-})
+const uploadMulter = uploader.uploader("realtor-houses");
 const MultiUpload = uploadMulter.array('images');
+
 upload = async (req, res, next) => {
   // upload to aws s3 storage
   MultiUpload(req, res, (error) => {
@@ -160,6 +140,7 @@ upload = async (req, res, next) => {
     const {
       files
     } = req;
+    console.log(files);
 
     const lists = [];
     files.forEach(element => {
@@ -218,31 +199,3 @@ module.exports = ListingController = {
   listings,
   upload
 };
-
-
-
-//       // find doc and update photos:['photo1',photo2' ....]
-//       Listing.findOneAndUpdate({
-//           _id: req.params.id
-//         }, {
-//           $push: {
-//             photos: lists
-//           }
-//         },
-//         (err, doc) => {
-
-//         }
-//       );
-
-//       res.json({
-//         status: 200,
-//         message: "upload successfully"
-//       });
-//     }
-//   } catch (error) {
-//     res.json({
-//       status: 401,
-//       message: error.message
-//     });
-
-//   }

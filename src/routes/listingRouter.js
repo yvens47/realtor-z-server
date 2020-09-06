@@ -13,16 +13,8 @@ router.get("/:id", ListingController.get);
 router.post("/create", ListingController.create);
 router.put("/update/:id", ListingController.update);
 
-
-
-
-
-
 router.post(
   "/upload/:id",
-
-  ListingController.upload
-
-);
+  ListingController.upload);
 
 module.exports = router;

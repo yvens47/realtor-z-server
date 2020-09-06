@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const Listing = require("../models/listing.model");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const uploader = require("../utils/imageUpload")
 const {
   sendMail
 } = require("../utils/email");
@@ -176,9 +177,12 @@ getUserDashboard = async (req, res) => {
   } catch (error) {}
 };
 
+const uploadMulter = uploader.uploader("realtor-houses");
+const singleUpload = uploadMulter.single('avatar');
+
 upload = async (req, res, next) => {
   const userid = req.params.id;
-  const path = req.file.filename;
+
 
   if (req.error) {
     res.status(400).json({
@@ -187,19 +191,31 @@ upload = async (req, res, next) => {
     });
   } else {
     // update user doc in database
-    User.findById({
-      _id: userid
-    }, (error, doc) => {
-      doc.picture = path;
-      doc.save();
-    });
-    try {} catch (error) {}
+    singleUpload(req, res, (error) => {
+      if (error) {
+        return res.status(400).json({
+          status: false,
+          message: error
+        });
+      }
+      const path = req.file.location;
+      User.findById({
+        _id: userid
+      }, (error, doc) => {
+        doc.picture = path;
+        doc.save();
+      });
+      try {} catch (error) {}
 
-    res.json({
-      status: 200,
-      message: "upload successfully",
-      path: path
-    });
+      res.json({
+        status: 200,
+        message: "upload successfully",
+        path: path
+      });
+
+    })
+
+
   }
 };
 deleteUserListing = async (req, res) => {
