@@ -199,6 +199,7 @@ upload = async (req, res, next) => {
         });
       }
       const path = req.file.location;
+      
       User.findById({
         _id: userid
       }, (error, doc) => {

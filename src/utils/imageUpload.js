@@ -55,7 +55,7 @@ function uploader(bucket) {
         });
       },
       key: function (req, file, cb) {
-        cb(null, file.originalname);
+        cb(null, Date.now().toString() + file.originalname);
       }
     }),
     fileFilter: (req, file, cb) => {

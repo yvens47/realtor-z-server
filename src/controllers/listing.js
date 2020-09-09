@@ -97,6 +97,8 @@ update = async (req, res) => {
 
 // get a listing
 get = async (req, res, next) => {
+  console.log(req._remoteAddress);
+
   const {
     id
   } = req.params;
@@ -109,7 +111,10 @@ get = async (req, res, next) => {
         });
       }
       // document found
-      console.log(doc.listingAddress);
+      //console.log(doc.listingAddress);
+      // check if Ip adrress of current user is alread existed in db
+      // if not increment views for this listing
+      // if it does do nothing. views already counted
 
       doc.findSimilar(Listing, doc).then(d => {
         return res.json({
@@ -140,7 +145,6 @@ upload = async (req, res, next) => {
     const {
       files
     } = req;
-    console.log(files);
 
     const lists = [];
     files.forEach(element => {
