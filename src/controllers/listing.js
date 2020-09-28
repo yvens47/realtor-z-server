@@ -135,7 +135,6 @@ const MultiUpload = uploadMulter.array('images');
 upload = async (req, res, next) => {
   // upload to aws s3 storage
   MultiUpload(req, res, (error) => {
-
     if (error) {
       res.status(400).json({
         status: false,
@@ -145,12 +144,10 @@ upload = async (req, res, next) => {
     const {
       files
     } = req;
-
     const lists = [];
     files.forEach(element => {
       lists.push(element.location);
     });
-
     // find doc and update photos:['photo1',photo2' ....]
     try {
       Listing.findOneAndUpdate({
@@ -183,11 +180,6 @@ upload = async (req, res, next) => {
       });
 
     }
-
-
-
-
-
   })
 
 

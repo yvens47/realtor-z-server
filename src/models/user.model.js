@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: [3, 'name is too short'],
-    required: "Please enter name"
+    required: "Please enter your name"
   },
   email: {
     type: String,
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    required: "Please enter password"
+    required: "Please enter a password"
   },
   picture: {
     type: String,
@@ -46,7 +46,10 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+userSchema.post('save', (error, doc, next) => {
+  validateErrors(error, next);
 
+})
 userSchema.pre("save", function (next) {
   if (!this.isModified("password")) {
     return next();
@@ -74,4 +77,16 @@ userSchema.methods.checkPassword = function (password) {
     });
   });
 };
+
+function validateErrors(error, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error("Email is Already taken"));
+  } else if (error.errors && error.errors.name) {
+    next(new Error(error.errors.name.message));
+  } else if (error.errors && error.errors.password) {
+    next(new Error(error.errors.password.message));
+  } else {
+    next();
+  }
+}
 module.exports = mongoose.model("User", userSchema);

@@ -17,14 +17,12 @@ const listingRouter = require("./routes/listingRouter");
 const {
   connect
 } = require("./utils/db");
-
 // database connection
 connect();
-
 var corsOptions = {
   origin: "*"
 };
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(morgan("combined"));
 // parse application/x-www-form-urlencoded
 app.use(
@@ -35,6 +33,9 @@ app.use(
 
 // parse application/json
 app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({
+//   extended: true
+// }));
 app.use(express.static("public"));
 app.use("/uploads", express.static(__dirname + "/uploads"));
 app.use("/admin", admin());

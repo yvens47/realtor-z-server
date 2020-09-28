@@ -7,33 +7,33 @@ const {
   sendMail
 } = require("../utils/email");
 
-signup = async (req, res) => {
+signup = async (req, res, next) => {
+
+  // create a new user and save to db
+
   try {
-    // create a new user and save to db
-    const doc = await User.create(req.body);
-    res.status(201).json({
-      data: doc,
-      success: true
+    User.create(req.body, (error) => {
+
+      if (error) {
+        return res
+          .status(401)
+          .json({
+            data: error.message
+
+          });
+      }
+      res.status(201).json({
+
+        success: true
+      });
     });
-  } catch (e) {
-    // unable to create and save user
-    const {
-      name,
-      email,
-      password
-    } = e.errors;
-    const data = {
-      name: name.message,
-      email: email.message,
-      password: password.message
-    };
 
 
-    res
-      .status(400)
-      .json(data)
-      .end();
+  } catch (error) {
+    console.log('line 34', error);
+
   }
+
 };
 
 login = async (req, res) => {
@@ -199,7 +199,7 @@ upload = async (req, res, next) => {
         });
       }
       const path = req.file.location;
-      
+
       User.findById({
         _id: userid
       }, (error, doc) => {
