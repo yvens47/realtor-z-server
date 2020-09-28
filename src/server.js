@@ -20,9 +20,14 @@ const {
 // database connection
 connect();
 var corsOptions = {
-  origin: "*"
+  origin: "https://realtor-z.herokuapp.com/",
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  'preflightContinue': false,
+  "optionSuccessStatus": 204,
+
 };
 app.use(cors());
+
 app.use(morgan("combined"));
 // parse application/x-www-form-urlencoded
 app.use(
