@@ -135,6 +135,7 @@ const MultiUpload = uploadMulter.array('images');
 upload = async (req, res, next) => {
   // upload to aws s3 storage
   MultiUpload(req, res, (error) => {
+    console.log("error line 138", error);
     if (error) {
       res.status(400).json({
         status: false,
