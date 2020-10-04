@@ -133,6 +133,7 @@ const uploadMulter = uploader.uploader("realtor-houses");
 const MultiUpload = uploadMulter.array('images');
 
 upload = async (req, res, next) => {
+  console.log(req)
   // upload to aws s3 storage
   MultiUpload(req, res, (error) => {
     console.log("error line 138", error);
