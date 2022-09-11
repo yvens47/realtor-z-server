@@ -26,6 +26,7 @@ create = async (req, res) => {
     const doc = await Listing.create(req.body);
     res.status(200).json({ data: doc, success: true });
   } catch (e) {
+    console.log(e)
     // unable to create and save user
     res
       .status(400)
@@ -36,10 +37,18 @@ create = async (req, res) => {
 
 // update a listing based on id received from req.body
 update = async (req, res) => {
+
   try {
+
     const { street, city, state, zip } = req.body.address;
+    const { photos } = req.body;
     const n = await getCoordinates(street, city, state, zip);
     req.body.coords = n.data.results[0].locations[0].latLng;
+    // do not update if there is no photos
+    if (photos.length == 0) {
+      return res.json({ error: "Listing must have at least one picture" });
+
+    }
 
     Listing.findByIdAndUpdate(
       { _id: req.params.id },
@@ -53,7 +62,8 @@ update = async (req, res) => {
       }
     );
   } catch (error) {
-    res.json({ error: error });
+
+    res.json({ error: error.message, message: "error" });
   }
 };
 

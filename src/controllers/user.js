@@ -171,9 +171,10 @@ getUserDashboard = async (req, res) => {
   const userId = req.params.userId;
   try {
     Listing.findListingsByUser(userId).then(result => {
+
       res.json(result);
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 upload = async (req, res, next) => {
@@ -193,7 +194,7 @@ upload = async (req, res, next) => {
       doc.picture = path;
       doc.save();
     });
-    try {} catch (error) {}
+    try { } catch (error) { }
 
     res.json({
       status: 200,
@@ -214,12 +215,14 @@ deleteUserListing = async (req, res) => {
 
 // update a listing based on id received from req.body
 update = async (req, res) => {
-  console.log(req);
+
   try {
     const {
       name,
       phone,
-      company
+      company,
+      photos
+
     } = req.body;
     const userId = req.body.userId;
     const data = {
@@ -229,12 +232,12 @@ update = async (req, res) => {
     };
 
     User.findByIdAndUpdate({
-        _id: userId
-      },
+      _id: userId
+    },
       data, {
-        multi: true,
-        new: true
-      },
+      multi: true,
+      new: true
+    },
       (err, doc) => {
         if (err || !doc) {
           res.json({
